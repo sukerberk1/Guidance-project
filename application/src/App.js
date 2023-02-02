@@ -8,7 +8,10 @@ function App() {
 
   const [currentPage, setCurrentPage] = useState('home');
   
-  let userId = 1; /* temporary current user id */
+  let credentials = {
+    login: 'admin',
+    password: '1qaz@WSX',
+  }
 
     return (
     <Container className='App'>
@@ -39,13 +42,13 @@ function App() {
           label="Profile" 
           value='profile'
           icon={<Person />} 
-          LinkComponent={RouterLink} to={`profile/${userId}`}
+          LinkComponent={RouterLink} to={`users/${credentials.login}`}
         />
         <BottomNavigationAction 
           label="YourBuddy" 
           value='yourBuddy'
           icon={<SmartToy />} 
-          LinkComponent={RouterLink} to={`yourbuddy/${userId}`}
+          LinkComponent={RouterLink} to={`yourbuddy/${credentials.login}`}
         />
       </BottomNavigation>
     </Container>
