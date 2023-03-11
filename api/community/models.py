@@ -1,11 +1,10 @@
 from django.db import models
 from users.models import User
-import datetime
 
 # Create your models here.
 
 class Tag(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
 
     def __str__(self) -> str:
         return self.name
@@ -21,6 +20,12 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)
     pub_date = models.DateTimeField(auto_now=True)
+    
+    POST_THEMES = (
+        ("P","post"),
+        ("Q","question")
+    )
+    theme = models.CharField(max_length=1, choices=POST_THEMES, default='Q')
 
     def get_tags(self):
         return self.tags.all()
