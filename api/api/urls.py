@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from users.views import user_viewset
-from community.views import AddPost, LikePost, AddComment, post_viewset
+from community.views import *
 
 
 router = routers.DefaultRouter()

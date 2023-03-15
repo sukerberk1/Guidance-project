@@ -1,13 +1,17 @@
 from rest_framework import serializers
 from users.models import User
 
-
-class UserSerializer(serializers.ModelSerializer):
+class ShortUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ("is_staff", "is_superuser")
-        
-        write_only_fields = ('password',)
+        fields = ("username","first_name","last_name","avatar")
+
+class UserSerializer(serializers.ModelSerializer):
+    followed_users = ShortUserSerializer(many=True)
+    class Meta:
+        model = User
+        exclude = ("is_staff", "is_superuser", "is_active", "user_permissions")
+        extra_kwargs = {'password': {'write_only': True}}
         read_only_fields = ('id',)
     
     def create(self, validated_data):
@@ -20,3 +24,4 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+

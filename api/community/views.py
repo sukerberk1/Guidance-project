@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from users.serializers import UserSerializer
 from .models import Tag, Post
 from .serializers import PostSerializer, CommentSerializer
 
@@ -12,6 +13,7 @@ from .serializers import PostSerializer, CommentSerializer
 class post_viewset(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    # permission_classes = (IsAuthenticated,)
     
 
 class AddPost(generics.CreateAPIView):
@@ -57,6 +59,8 @@ class LikePost(generics.UpdateAPIView):
             post.likes.add(user)
         serializer = self.get_serializer(post)
         return Response(serializer.data ,status=status.HTTP_202_ACCEPTED)
+    
+
 
 
 class AddComment(generics.CreateAPIView):

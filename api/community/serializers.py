@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from community.models import Post, Comment
-from users.models import User
+from users.serializers import ShortUserSerializer
+from .models import Post, Comment
 
+#TODO: response caching?
 class PostSerializer(serializers.ModelSerializer):
+    likes_count = serializers.ReadOnlyField(source="get_likes_count")
+    likes = ShortUserSerializer(many=True)
+    author = ShortUserSerializer()
     class Meta:
         model = Post
         fields = "__all__"
