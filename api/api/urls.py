@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from users.views import user_viewset
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from users.views import user_viewset, get_user_by_token
 from community.views import *
 
 
@@ -31,8 +31,10 @@ urlpatterns = [
     path('api/', include(router.urls) ),
 
     path('api/token/obtain-pair/', TokenObtainPairView.as_view() , name='obtain-token'),
-    path('api/token/obtain-refresh/', TokenRefreshView.as_view() , name='api-token-auth'),
+    path('api/token/refresh/', TokenRefreshView.as_view() , name='refresh-token'),
+    path('api/token/verify/', TokenVerifyView.as_view() , name='verify-token'),
 
+    path('api/translate-token/', get_user_by_token, name="user_by_token_api"),
     path('api/posts/create/', AddPost.as_view(), name='add_post_api'),
     path('api/posts/like/', LikePost.as_view(), name='like_post_api'),
     path('api/comments/add/', AddComment.as_view(), name='add_comment_api'),
