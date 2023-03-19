@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import jwt_decode from "jwt-decode";
+import LoadingScreen from "../components/LoadingScreen";
 import { useHistory, redirect } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -123,27 +123,29 @@ export const AuthProvider = ({ children }) => {
       return await res.json()
   }
 
-
-  useEffect(() => {
-    if (localStorage.getItem('access')) {
-        verifyAccessToken().then(ans => {
-          if(!ans) refreshUser();
-        });
-        setAccessToken(localStorage.getItem('access'));
-    }
-    setLoading(false);
-  }, [loading]);
-
+  /* Access token localstorage setter */
   useEffect(() => {
     localStorage.setItem("access", accessToken);
     console.log("access token changed");
   },[accessToken])
 
+  /* Refresh token localstorage setter */
   useEffect(() => {
     localStorage.setItem("refresh", refreshToken);
     console.log("refresh token changed");
   },[refreshToken])
 
+  /*This useEffect logs user in if their localstorage token is valid */
+  useEffect(() => {
+    if (localStorage.getItem("refresh")) {
+        refreshUser().then(
+          (ans) => {
+            if (!ans) logoutUser();
+          }
+        );
+    }
+    setLoading(false);
+  }, [loading]);
 
   const contextData = {
     accessToken,
@@ -158,7 +160,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={contextData}>
-      {loading ? null : children}
+      {loading ? (<LoadingScreen/>) : children}
     </AuthContext.Provider>
   );
 };
