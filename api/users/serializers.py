@@ -7,7 +7,7 @@ class ShortUserSerializer(serializers.ModelSerializer):
         fields = ("username","first_name","last_name","avatar")
 
 class UserSerializer(serializers.ModelSerializer):
-    followed_users = ShortUserSerializer(many=True)
+    followed_users = ShortUserSerializer(many=True, required=False)
     class Meta:
         model = User
         exclude = ("is_staff", "is_superuser", "is_active", "user_permissions")

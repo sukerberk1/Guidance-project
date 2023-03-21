@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .serializers import UserSerializer, ShortUserSerializer
 from users.models import User
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -19,6 +19,13 @@ class user_viewset(viewsets.ModelViewSet):
         else:
             permission_classes = (IsAuthenticated,)
         return [permission() for permission in permission_classes]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET", "POST"])

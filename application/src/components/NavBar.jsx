@@ -30,11 +30,13 @@ const pages = [
 const unloggedUserOptions = [
   {
     title:"Zaloguj się",
-    icon: <Login/>
+    icon: <Login/>,
+    link: "/login"
   },
   {
     title:"Stwórz konto",
-    icon: <PersonAdd/>
+    icon: <PersonAdd/>,
+    link: "/register"
   }
 ];
 const settings = [
@@ -147,7 +149,7 @@ function NavBar() {
                 </>)))
               ) : (
               unloggedUserOptions.map((opt) => (<>
-              <ListItemButton LinkComponent={Link} to={"/login/"}>
+              <ListItemButton LinkComponent={Link} to={opt.link}>
                   <ListItemIcon sx={{color: 'white'}}>
                     {opt.icon}
                   </ListItemIcon>

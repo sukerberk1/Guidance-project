@@ -102,7 +102,10 @@ export const AuthProvider = ({ children }) => {
         last_name
       })
     });
-    return response.status;
+    return {
+      status: response.status,
+      data: await response.json()
+    };
   };
 
   const logoutUser = () => {
