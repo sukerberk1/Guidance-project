@@ -6,81 +6,49 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
 import AuthContext from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import {  ClearAll, GMobiledata, Login, PersonAdd, School, TipsAndUpdates, TrendingUp } from '@mui/icons-material';
-import {  Divider, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, SwipeableDrawer } from '@mui/material';
-import styled from '@emotion/styled';
+import { GMobiledata,  Notifications,  School, SmartToy } from '@mui/icons-material';
+import { Avatar, Badge, Divider, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
+import { NavBarCustomIconButton, StyledListSubheader, StyledSwipeableDrawer } from './NavBar-customelements';
+import { pages, unloggedUserOptions, loggedUserOptions } from "../pages.config"
 
-const pages = [
-  {
-    title: "Główna",
-    icon: <ClearAll/>
-  },
-  {
-    title: "Tematy",
-    icon: <TipsAndUpdates/>
-  },
-  {
-    title: "Popularne",
-    icon: <TrendingUp/>
-  }
-];
-const unloggedUserOptions = [
-  {
-    title:"Zaloguj się",
-    icon: <Login/>,
-    link: "/login"
-  },
-  {
-    title:"Stwórz konto",
-    icon: <PersonAdd/>,
-    link: "/register"
-  }
-];
-const settings = [
-  {
-    title:"Moje konto",
-    icon: <Login/>
-  },
-  {
-    title:"Wypłać żappsy",
-    icon: <PersonAdd/>
-  }
-];
 
-const StyledSwipeableDrawer = styled(SwipeableDrawer)({
-  "& 	.MuiDrawer-paper": {
-    backgroundColor: "#404040",
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    minWidth: 190
-  }
-});
-
-const StyledListSubheader = styled(ListSubheader)({
-  backgroundColor: "#262626",
-  color: 'white',
-  opacity: 0.7,
-  textTransform: "uppercase",
-  letterSpacing: 2,
-  fontSize: 12
-});
 
 function NavBar() {
 
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const { accessToken } = React.useContext(AuthContext);
+  const [ ResponsiveNav, setResponsiveNav] = React.useState(null);
+  const [ userMenu, setUserMenu ] = React.useState(null);
+  const { accessToken, getUserData } = React.useContext(AuthContext);
+  const [ currentUser, setCurrentUser ] = React.useState({
+    username: "",
+    first_name: "",
+    last_name:"",
+    avatar:""
+  });
 
   const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+    setResponsiveNav(event.currentTarget);
+  };
+  const handleCloseNavMenu = () => {
+    setResponsiveNav(null);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const handleOpenUserMenu = (event) => {
+    setUserMenu(event.currentTarget);
+  }
+  const handleCloseUserMenu = (event) => {
+    setUserMenu(null);
+  }
+
+
+  const setUser = async () =>{
+    setCurrentUser(await getUserData());
+  }
+
+  React.useEffect(()=>{
+    if(accessToken) setUser();
+  },[accessToken])
 
 
   return (
@@ -91,7 +59,7 @@ function NavBar() {
           <Typography
             variant="h6"
             noWrap
-            component="a"
+            LinkComponent={Link} to="/"
             href="/"
             sx={{
               mr: 2,
@@ -120,8 +88,8 @@ function NavBar() {
             </IconButton>
 
             <StyledSwipeableDrawer
-              anchorEl={anchorElNav}
-              open={Boolean(anchorElNav)}
+              anchorEl={ResponsiveNav}
+              open={Boolean(ResponsiveNav)}
               onClose={handleCloseNavMenu}
             >
               <GMobiledata sx={{color: "#52525b", fontSize: 72, textAlign: 'center'}}/>
@@ -136,10 +104,10 @@ function NavBar() {
               ))}
               <Divider/>
               {accessToken ? 
-              (<StyledListSubheader color='inherit'>Hej, Szymek</StyledListSubheader>) 
+              (<StyledListSubheader color='inherit'>Hej, {currentUser.username}</StyledListSubheader>) 
               : (<StyledListSubheader>Jesteś niezalogowany/a</StyledListSubheader>)}
               {accessToken ? (
-                settings.map((opt => (<>
+                loggedUserOptions.map((opt => (<>
                 <ListItemButton LinkComponent={Link}>
                     <ListItemIcon sx={{color: 'white'}}>
                       {opt.icon}
@@ -158,10 +126,9 @@ function NavBar() {
               </>
               )))}
               </List>
-              
             </StyledSwipeableDrawer>
-
           </Box>
+
           <School sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: "#65a30d"}} />
           <Typography
             variant="h5"
@@ -182,16 +149,58 @@ function NavBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-              <Button
-                key={page.title}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page.icon}
-                {page.title}
-              </Button>
+                <NavBarCustomIconButton option={page}/>
             ))}
           </Box>
+          <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+            {accessToken ? (<>
+              <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17}>
+                <Notifications/>
+              </Badge>
+            </IconButton>
+              <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} >
+                <Avatar alt={currentUser.username} src={`http://127.0.0.1:8000/${currentUser.avatar}`} />
+              </IconButton>
+              </Tooltip>
+              </>
+            ) : (
+              unloggedUserOptions.map((opt) => (
+                  <NavBarCustomIconButton option={opt}/>
+              ))
+            )}
+
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={userMenu}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(userMenu)}
+              onClose={handleCloseUserMenu}
+            >
+              {loggedUserOptions.map((opt) => (
+                <MenuItem key={opt.title} onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">{opt.title}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+
+
+          </Box>
+          
         </Toolbar>
       </Container>
     </AppBar>

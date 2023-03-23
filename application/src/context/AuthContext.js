@@ -36,14 +36,12 @@ export const AuthProvider = ({ children }) => {
     const data = await response.json();
     if (response.status === 200) {
       setAccessToken(data.access);
-      setRefreshToken(data.refresh);
-      return response.status;
-    } else if(response.status === 401){
-      return response.status;
-    } else {
-      alert("Something went wrong!");
-      return 0
+      setRefreshToken(data.refresh); 
     }
+    return {
+      status: response.status,
+      data: data
+    };
   };
 
   const verifyAccessToken = async () => {
@@ -116,6 +114,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const getUserData = async () => {
+    await refreshUser();
     const res = await fetch("http://127.0.0.1:8000/api/translate-token/", {
         method: "POST",
         headers: {

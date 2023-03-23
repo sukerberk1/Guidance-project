@@ -44,7 +44,7 @@ export default function RegisterPage(props){
                     (<FormTextField error helperText="Ta nazwa jest już zajęta" fullWidth label="Nazwa użytkownika" variant="standard" name="username"/>) 
                     : (<FormTextField fullWidth label="Nazwa użytkownika" variant="standard" name="username"/>)}
                     {/* it's not necessary to perform validation on first and last name providing we dont take trolling into account */}
-                    <Box className="md:flex">
+                    <Box className="flex flex-col md:flex-row gap-4">
                         <FormTextField fullWidth label="Twoje imię" variant="standard" name="first_name"/>
                         <FormTextField fullWidth label="Twoje nazwisko" variant="standard" name="last_name"/>
                     </Box>
