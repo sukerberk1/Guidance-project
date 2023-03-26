@@ -22,10 +22,9 @@ export const AuthProvider = ({ children }) => {
     first_name: "",
     last_name:"",
     avatar:"",
-    bio:"",
-    followed_users:[],
   });
   const [ loading, setLoading ] = useState(true);
+  const [ authError, setAuthError ] = useState(false);
   
 
   const loginUser = async (username, password) => {
@@ -54,6 +53,7 @@ export const AuthProvider = ({ children }) => {
     };
   };
 
+  /** verifies accessToken inside accessToken state value. Returns 1 if token's valid and 0 if not. THIS FUNCTION DOES NO CHANGE TO TOKEN VALUES */
   const verifyAccessToken = async () => {
     const response = await fetch("http://127.0.0.1:8000/api/token/verify/", {
       method: "POST",
@@ -65,15 +65,13 @@ export const AuthProvider = ({ children }) => {
         token: accessToken,
       })
     });
-    if (response.status === 200) return 1
+    if (response.status === 200) return 1;
     else return 0;
   }
 
+  /** uses refreshToken to refresh AccessToken. Returns 1 if succeded and 0 if not */
   const refreshUser = async () => {
-    let tokenValid = await verifyAccessToken();
-    if(tokenValid){
-        return 1;
-    }
+    if (refreshToken === null) return 0;
     const response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
       method: "POST",
       headers: {
@@ -86,8 +84,8 @@ export const AuthProvider = ({ children }) => {
     });
     const data = await response.json();
     if (response.status === 200) {
+      console.log("setting accessToken:"+data.access);
       setAccessToken(data.access); 
-      await decodeUserFromToken();
       return 1;
     } else{
       console.log('Couldnt refresh token');
@@ -124,7 +122,7 @@ export const AuthProvider = ({ children }) => {
     return 204; /* http 'no content' response */
   };
 
-  /** this function decodes current JWT and stores current user in loggedUser stateful value */
+  /** function decodes current JWT accessToken and stores current user in loggedUser stateful value */
   const decodeUserFromToken = async () => {
     const res = await fetch("http://127.0.0.1:8000/api/translate-token/", {
         method: "POST",
@@ -149,24 +147,35 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("refresh", refreshToken);
   },[refreshToken])
 
-  /** TODO: may merge those useEffects so the code doesn't stay so unclean */
+
   /*This useEffect logs user in if their localstorage token is valid */
   useEffect(() => {
-    while (!verifyAccessToken()){
-      if(!localStorage.getItem("refresh")) {logoutUser(); break;}
-      refreshUser();
-    }
-    setLoading(false);
+    loginOnLoad();
   }, [loading]);
 
-  /** refreshes user with every re-render. Fixes bugs happening by refresh */
-  useEffect(()=>{refreshUser();});
+  async function loginOnLoad(){
+    let loginTryCounter = 0;  // for later usage to specify how many tries are there to log in
+    let isValid = await verifyAccessToken();
+    while(!isValid && loginTryCounter < 20){
+      const refreshed = await refreshUser();
+      isValid = refreshed;
+      loginTryCounter += 1;
+      console.log("loginonload loop, trycounter:"+loginTryCounter)
+    }
+    await decodeUserFromToken();
+    if (loginTryCounter >= 20){
+      logoutUser();
+      setAuthError(true);
+    }
+    setLoading(false);
+  }
 
 
   const contextData = {
     accessToken,
     loggedUser,
-    setAccessToken,
+    authError,
+    setAuthError,
     loginUser,
     logoutUser,
     refreshUser,

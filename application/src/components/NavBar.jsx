@@ -8,8 +8,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import AuthContext from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { GMobiledata,  Notifications,  School, SmartToy } from '@mui/icons-material';
-import { Avatar, Badge, Divider, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
+import { GMobiledata,  Logout,  Notifications,  School, SmartToy } from '@mui/icons-material';
+import { Avatar, Badge, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
 import { NavBarCustomIconButton, StyledListSubheader, StyledSwipeableDrawer } from './NavBar-customelements';
 import { pages, unloggedUserOptions, loggedUserOptions } from "../pages.config"
 
@@ -19,7 +19,8 @@ function NavBar(props) {
 
   const [ ResponsiveNav, setResponsiveNav] = React.useState(null);
   const [ userMenu, setUserMenu ] = React.useState(null);
-  const { accessToken, loggedUser } = React.useContext(AuthContext);
+  const [ logoutDialog, setLogoutDialog ] = React.useState(false);
+  const { accessToken, loggedUser, logoutUser } = React.useContext(AuthContext);
 
   const handleOpenNavMenu = (event) => {
     setResponsiveNav(event.currentTarget);
@@ -34,6 +35,10 @@ function NavBar(props) {
   const handleCloseUserMenu = (event) => {
     setUserMenu(null);
   };
+
+  const handleLogoutDialog = () => {
+    setLogoutDialog(!logoutDialog);
+  }
 
   return (
     <AppBar position="sticky" sx={{backgroundColor: "transparent", boxShadow: 'none'}}>
@@ -90,15 +95,22 @@ function NavBar(props) {
               {accessToken ? 
               (<StyledListSubheader color='inherit'>Hej, {loggedUser.username}</StyledListSubheader>) 
               : (<StyledListSubheader>Jesteś niezalogowany/a</StyledListSubheader>)}
-              {accessToken ? (
-                loggedUserOptions.map((opt => (<>
+              {accessToken ? (<>
+                {loggedUserOptions.map((opt => (<>
                 <ListItemButton component={Link} to={`users/${loggedUser.username}${opt.link}`} onClick={handleCloseNavMenu}>
                     <ListItemIcon sx={{color: 'white'}}>
                       {opt.icon}
                     </ListItemIcon>
                     <ListItemText>{opt.title}</ListItemText>
                 </ListItemButton>
-                </>)))
+                </>)))}
+                <ListItemButton onClick={()=>{handleCloseNavMenu(); handleLogoutDialog();}}>
+                    <ListItemIcon sx={{color: 'white'}}>
+                      <Logout/>
+                    </ListItemIcon>
+                    <ListItemText>Wyloguj się</ListItemText>
+                </ListItemButton>
+                </>
               ) : (
               unloggedUserOptions.map((opt) => (<>
               <ListItemButton component={Link} to={opt.link} onClick={handleCloseNavMenu}>
@@ -147,7 +159,7 @@ function NavBar(props) {
                 <Notifications/>
               </Badge>
             </IconButton>
-              <Tooltip title="Open settings">
+              <Tooltip title="Panel konta">
               <IconButton onClick={handleOpenUserMenu} >
                 <Avatar alt={loggedUser.username} src={`http://127.0.0.1:8000/${loggedUser.avatar}`} />
               </IconButton>
@@ -180,8 +192,33 @@ function NavBar(props) {
                   <Typography textAlign="center">{opt.title}</Typography>
                 </MenuItem>
               ))}
+              <MenuItem key={"Logout"} onClick={handleLogoutDialog}>
+                  <Typography textAlign="center">Wyloguj się</Typography>
+              </MenuItem>
             </Menu>
-
+              
+              {/** logout dialog */}
+            <Dialog
+              open={logoutDialog}
+              onClose={handleLogoutDialog}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Na pewno chcesz się wylogować?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Nastąpi wylogowanie z konta @{loggedUser.username}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleLogoutDialog}>Anuluj</Button>
+                <Button onClick={()=>{handleLogoutDialog();logoutUser();}} autoFocus>
+                  Wyloguj
+                </Button>
+              </DialogActions>
+            </Dialog>
 
           </Box>
           

@@ -36,7 +36,7 @@ export function NavBarCustomIconButton(props){
                     transform: "scale(1.5) rotate(10deg) translate(0, -2px)",
                   },
                   '& .MuiSvgIcon-root[data-testid="TrendingUpIcon"]':{
-                    transform: "scale(1.4) skew(-8deg, -12deg) translate(2px, -5px) rotate(-3deg)",
+                    transform: "scale(1.5) skew(-9deg, -10deg) translate(2px, -5px) rotate(-3deg)",
                   },
                   '& .MuiSvgIcon-root[data-testid="ClearAllIcon"]':{
                     transform: "scale(1.75, 1.5) translate(0, -2px) skew(25deg, 0deg)",

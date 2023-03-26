@@ -9,6 +9,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomePage from './routes/HomePage';
 import UserProfilePage, {Loader as profileLoader} from './routes/UserProfilePage';
 import LogoutRedirect from './routes/LogoutRedirect';
+import TagsPage from './routes/TagsPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -25,10 +26,10 @@ const router = createBrowserRouter([
       //   path: "trending/",
       //   element: </>
       // },
-      // {
-      //   path: "search/",
-      //   element: </>
-      // },
+      {
+        path: "tags/",
+        element: <TagsPage/>
+      },
       {
         path: "login/",
         element: <LoginPage/>

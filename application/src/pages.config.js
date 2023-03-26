@@ -1,11 +1,11 @@
-import { AirlineSeatReclineNormalSharp, Clear, ClearAll, Face2, Login, Logout, PersonAdd, SmartToy, TipsAndUpdates, TrendingUp } from "@mui/icons-material";
+import { Clear, ClearAll, Face2, Login,  PersonAdd, SmartToy, TipsAndUpdates, TrendingUp } from "@mui/icons-material";
 
 
 export const pages = [
     {
       title: "Główna",
       icon: <ClearAll/>,
-      link: "/"
+      link: "/home"
     },
     {
       title: "Tematy",
@@ -20,7 +20,7 @@ export const pages = [
     {title:"Twój StudyBuddy", 
     icon: <SmartToy/>, 
     link: ""   
-    }
+    },
 ];
 
 export const unloggedUserOptions = [
@@ -47,9 +47,10 @@ export const loggedUserOptions = [
       icon: <Clear/>,
       link: ""
     },
-    {
-      title:"Wyloguj się",
-      icon: <Logout/>,
-      link: "/logout"
-    },
+    // I decided to add logout option explicitly for every case where its necessary, bcs it does call the logout function instead of navigating through an interface
+    // {
+    //   title:"Wyloguj się",
+    //   icon: <Logout/>,
+    //   link: "/logout"
+    // },
 ];
