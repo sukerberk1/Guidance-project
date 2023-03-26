@@ -49,7 +49,7 @@ export default function UserProfilePage(props){
 
     useEffect(()=>{
         load();
-    },[followClick]);
+    },[followClick, searchedUsername]);
 
     if (user !== null)
     return(<Container maxWidth="md">
@@ -66,7 +66,7 @@ export default function UserProfilePage(props){
                 </Typography>
            
             </Box>
-            <Box sx={{display: 'flex', flexFlow:{md: 'column'}, alignItems: 'stretch', flexWrap: 'wrap', justifyContent: {xs:'space-around', md: 'flex-start'}, gap:{md:1}}}>
+            <Box sx={{display: 'flex', flexFlow:{md: 'column'}, alignItems: 'flex-end', flexWrap: 'wrap', justifyContent: {xs:'space-around', md: 'flex-start'}, gap:{md:1}}}>
                 <Box className="p-1 text-zinc-400">
                     <EmojiEvents sx={{margin: 1}}/>
                     <Typography variant="overline">Credit: {user.score}</Typography>

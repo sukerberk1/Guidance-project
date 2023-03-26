@@ -45,8 +45,9 @@ export const AuthProvider = ({ children }) => {
     if (response.status === 200) {
       setAccessToken(data.access);
       setRefreshToken(data.refresh); 
-      decodeUserFromToken();
+      await decodeUserFromToken();
     }
+    /** is returning data necessary? May remove in future for safety reasons */
     return {
       status: response.status,
       data: data
@@ -73,7 +74,6 @@ export const AuthProvider = ({ children }) => {
     if(tokenValid){
         return 1;
     }
-    const refreshToken = localStorage.getItem('refresh');
     const response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
       method: "POST",
       headers: {
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
     const data = await response.json();
     if (response.status === 200) {
       setAccessToken(data.access); 
-      decodeUserFromToken();
+      await decodeUserFromToken();
       return 1;
     } else{
       console.log('Couldnt refresh token');
@@ -117,6 +117,7 @@ export const AuthProvider = ({ children }) => {
 
   const logoutUser = () => {
     setAccessToken(null);
+    setRefreshToken(null);
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     return 204; /* http 'no content' response */
@@ -124,7 +125,6 @@ export const AuthProvider = ({ children }) => {
 
   /** this function decodes current JWT and stores current user in loggedUser stateful value */
   const decodeUserFromToken = async () => {
-    await refreshUser();
     const res = await fetch("http://127.0.0.1:8000/api/translate-token/", {
         method: "POST",
         headers: {
@@ -152,18 +152,9 @@ export const AuthProvider = ({ children }) => {
 
   /*This useEffect logs user in if their localstorage token is valid */
   useEffect(() => {
-    setLoading(true);
-    // if (localStorage.getItem("refresh")) {
-    //     refreshUser().then(
-    //       (ans) => {
-    //         if (!ans) logoutUser();
-    //       }
-    //     );
-    // }
     while (!verifyAccessToken()){
       if(!localStorage.getItem("refresh")) {logoutUser(); break;}
       refreshUser();
-      console.log("refreshUser loop");
     }
     setLoading(false);
   }, [loading]);
