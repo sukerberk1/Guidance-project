@@ -115,6 +115,7 @@ export const AuthProvider = ({ children }) => {
     };
   };
 
+  /** sets Access token and Refresh token to null and removes them from localstorage */
   const logoutUser = () => {
     setAccessToken(null);
     setRefreshToken(null);
@@ -141,15 +142,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("access", accessToken);
     decodeUserFromToken();
-    // console.log("access token changed");
   },[accessToken])
 
   /* Refresh token localstorage setter */
   useEffect(() => {
     localStorage.setItem("refresh", refreshToken);
-    // console.log("refresh token changed");
   },[refreshToken])
 
+  /** TODO: may merge those useEffects so the code doesn't stay so unclean */
   /*This useEffect logs user in if their localstorage token is valid */
   useEffect(() => {
     while (!verifyAccessToken()){
@@ -158,6 +158,9 @@ export const AuthProvider = ({ children }) => {
     }
     setLoading(false);
   }, [loading]);
+
+  /** refreshes user with every re-render. Fixes bugs happening by refresh */
+  useEffect(()=>{refreshUser();});
 
 
   const contextData = {
