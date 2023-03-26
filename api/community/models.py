@@ -3,6 +3,12 @@ from users.models import User
 
 # Create your models here.
 
+
+class Notification(models.Model):
+    description = models.TextField()
+    recievers = models.ManyToManyField(User, related_name="notifications", blank=True)
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
@@ -20,6 +26,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)
     pub_date = models.DateTimeField(auto_now=True)
+    users_following = models.ManyToManyField(User, related_name="followed_posts", blank=True)
     
     POST_THEMES = (
         ("P","post"),

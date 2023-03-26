@@ -48,8 +48,6 @@ class LikePost(generics.UpdateAPIView):
 
     def partial_update(self, request, *args, **kwargs):
         auth = JWTAuthentication()
-        if auth.authenticate(self.request) is None:
-            return Response("Invalid access token", status=status.HTTP_401_UNAUTHORIZED)
         user, token = auth.authenticate(self.request)
         # view requires post id as request body
         post = get_object_or_404(Post, id=request.data['id'])

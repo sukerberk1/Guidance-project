@@ -7,6 +7,8 @@ import RegisterPage from './routes/RegisterPage';
 import { AuthProvider } from './context/AuthContext';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomePage from './routes/HomePage';
+import UserProfilePage, {Loader as profileLoader} from './routes/UserProfilePage';
+import LogoutRedirect from './routes/LogoutRedirect';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -21,11 +23,11 @@ const router = createBrowserRouter([
       },
       // {
       //   path: "trending/",
-      //   element: <LoginPage/>
+      //   element: </>
       // },
       // {
       //   path: "search/",
-      //   element: <LoginPage/>
+      //   element: </>
       // },
       {
         path: "login/",
@@ -34,6 +36,17 @@ const router = createBrowserRouter([
       {
         path: "register/",
         element: <RegisterPage/>
+      },
+      {
+        path: "users/:username/",
+        element: <UserProfilePage/>,
+        loader: profileLoader,
+        children: [
+          {
+            path: "logout/",
+            element: <LogoutRedirect/>
+          }
+        ]
       }
     ]
   }

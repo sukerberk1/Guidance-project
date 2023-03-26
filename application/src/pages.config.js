@@ -1,11 +1,11 @@
-import { ClearAll, Login, PersonAdd, SmartToy, TipsAndUpdates, TrendingUp } from "@mui/icons-material";
+import { AirlineSeatReclineNormalSharp, Clear, ClearAll, Face2, Login, Logout, PersonAdd, SmartToy, TipsAndUpdates, TrendingUp } from "@mui/icons-material";
 
 
 export const pages = [
     {
       title: "Główna",
       icon: <ClearAll/>,
-      link: "/home"
+      link: "/"
     },
     {
       title: "Tematy",
@@ -38,11 +38,18 @@ export const unloggedUserOptions = [
 
 export const loggedUserOptions = [
     {
-      title:"Moje konto",
-      icon: <Login/>
+      title:"Mój profil",
+      icon: <Face2/>,
+      link: ""
     },
     {
       title:"Wypłać żappsy",
-      icon: <PersonAdd/>
-    }
+      icon: <Clear/>,
+      link: ""
+    },
+    {
+      title:"Wyloguj się",
+      icon: <Logout/>,
+      link: "/logout"
+    },
 ];

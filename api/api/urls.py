@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from users.views import user_viewset, get_user_by_token
+from users.views import *
 from community.views import *
 from .settings import MEDIA_ROOT, MEDIA_URL
 
@@ -35,10 +35,10 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view() , name='refresh-token'),
     path('api/token/verify/', TokenVerifyView.as_view() , name='verify-token'),
 
-    path('api/translate-token/', get_user_by_token, name="user_by_token_api"),
-    path('api/posts/create/', AddPost.as_view(), name='add_post_api'),
-    path('api/posts/like/', LikePost.as_view(), name='like_post_api'),
-    path('api/comments/add/', AddComment.as_view(), name='add_comment_api'),
+    path('api/translate-token/', get_user_by_token, name="user-by-token-api"),
+    path('api/posts/create/', AddPost.as_view(), name='add-post-api'),
+    path('api/posts/like/', LikePost.as_view(), name='like-post-api'),
+    path('api/comments/add/', AddComment.as_view(), name='add-comment-api'),
 ]
 
 urlpatterns += static(MEDIA_URL,document_root=MEDIA_ROOT)

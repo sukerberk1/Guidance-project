@@ -13,16 +13,20 @@ class User(AbstractUser):
         return super().username
 
     # returns how many users is User followed by
-    def followed_by_count(self) -> int:
+    def users_following_count(self) -> int:
         return self.followed_by.count()
 
     # returns how many users does User follow
-    def following_count(self) -> int:
+    def followed_users_count(self) -> int:
         return self.followed_users.count()
 
     # returns queryset of users followed by User
     def get_followed_users(self):
         return self.followed_users.all()
+    
+    # returns queryset of users following User
+    def get_users_following(self):
+        return self.followed_by.all()
     
     # returns posts created by User
     def get_posts(self):

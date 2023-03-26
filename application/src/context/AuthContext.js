@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import LoadingScreen from "../components/LoadingScreen";
-import { useHistory, redirect } from "react-router-dom";
+import { useHistory, redirect, useLocation } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -17,7 +17,15 @@ export const AuthProvider = ({ children }) => {
       ? localStorage.getItem("refresh")
       : null
   );
-  const [loading, setLoading] = useState(true);
+  const [ loggedUser, setLoggedUser ] = useState({
+    username: "",
+    first_name: "",
+    last_name:"",
+    avatar:"",
+    bio:"",
+    followed_users:[],
+  });
+  const [ loading, setLoading ] = useState(true);
   
 
   const loginUser = async (username, password) => {
@@ -37,6 +45,7 @@ export const AuthProvider = ({ children }) => {
     if (response.status === 200) {
       setAccessToken(data.access);
       setRefreshToken(data.refresh); 
+      decodeUserFromToken();
     }
     return {
       status: response.status,
@@ -45,7 +54,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const verifyAccessToken = async () => {
-    const accessToken = localStorage.getItem('access');
     const response = await fetch("http://127.0.0.1:8000/api/token/verify/", {
       method: "POST",
       headers: {
@@ -78,7 +86,8 @@ export const AuthProvider = ({ children }) => {
     });
     const data = await response.json();
     if (response.status === 200) {
-      localStorage.setItem('access', data.access); 
+      setAccessToken(data.access); 
+      decodeUserFromToken();
       return 1;
     } else{
       console.log('Couldnt refresh token');
@@ -113,7 +122,8 @@ export const AuthProvider = ({ children }) => {
     return 204; /* http 'no content' response */
   };
 
-  const getUserData = async () => {
+  /** this function decodes current JWT and stores current user in loggedUser stateful value */
+  const decodeUserFromToken = async () => {
     await refreshUser();
     const res = await fetch("http://127.0.0.1:8000/api/translate-token/", {
         method: "POST",
@@ -122,42 +132,52 @@ export const AuthProvider = ({ children }) => {
             "Content-Type": "application/json"
         },
       });
-      return await res.json()
-  }
+    const u = await res.json()
+    setLoggedUser(u);
+  };
 
   /* Access token localstorage setter */
+  /** additionally, triggers tokenDecode on every token change so the user data, avatar etc stay up-to-date */
   useEffect(() => {
     localStorage.setItem("access", accessToken);
-    console.log("access token changed");
+    decodeUserFromToken();
+    // console.log("access token changed");
   },[accessToken])
 
   /* Refresh token localstorage setter */
   useEffect(() => {
     localStorage.setItem("refresh", refreshToken);
-    console.log("refresh token changed");
+    // console.log("refresh token changed");
   },[refreshToken])
 
   /*This useEffect logs user in if their localstorage token is valid */
   useEffect(() => {
-    if (localStorage.getItem("refresh")) {
-        refreshUser().then(
-          (ans) => {
-            if (!ans) logoutUser();
-          }
-        );
+    setLoading(true);
+    // if (localStorage.getItem("refresh")) {
+    //     refreshUser().then(
+    //       (ans) => {
+    //         if (!ans) logoutUser();
+    //       }
+    //     );
+    // }
+    while (!verifyAccessToken()){
+      if(!localStorage.getItem("refresh")) {logoutUser(); break;}
+      refreshUser();
+      console.log("refreshUser loop");
     }
     setLoading(false);
   }, [loading]);
 
+
   const contextData = {
     accessToken,
+    loggedUser,
     setAccessToken,
     loginUser,
     logoutUser,
     refreshUser,
     verifyAccessToken,
     registerUser,
-    getUserData
   };
 
   return (

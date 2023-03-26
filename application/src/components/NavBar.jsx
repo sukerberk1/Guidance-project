@@ -15,17 +15,11 @@ import { pages, unloggedUserOptions, loggedUserOptions } from "../pages.config"
 
 
 
-function NavBar() {
+function NavBar(props) {
 
   const [ ResponsiveNav, setResponsiveNav] = React.useState(null);
   const [ userMenu, setUserMenu ] = React.useState(null);
-  const { accessToken, getUserData } = React.useContext(AuthContext);
-  const [ currentUser, setCurrentUser ] = React.useState({
-    username: "",
-    first_name: "",
-    last_name:"",
-    avatar:""
-  });
+  const { accessToken, loggedUser } = React.useContext(AuthContext);
 
   const handleOpenNavMenu = (event) => {
     setResponsiveNav(event.currentTarget);
@@ -36,23 +30,13 @@ function NavBar() {
 
   const handleOpenUserMenu = (event) => {
     setUserMenu(event.currentTarget);
-  }
+  };
   const handleCloseUserMenu = (event) => {
     setUserMenu(null);
-  }
-
-
-  const setUser = async () =>{
-    setCurrentUser(await getUserData());
-  }
-
-  React.useEffect(()=>{
-    if(accessToken) setUser();
-  },[accessToken])
-
+  };
 
   return (
-    <AppBar position="static" sx={{backgroundColor: "transparent", boxShadow: 'none'}}>
+    <AppBar position="sticky" sx={{backgroundColor: "transparent", boxShadow: 'none'}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <School sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, color: "#65a30d"}} />
@@ -95,7 +79,7 @@ function NavBar() {
               <GMobiledata sx={{color: "#52525b", fontSize: 72, textAlign: 'center'}}/>
               <List>
               {pages.map(page=>(
-                <ListItemButton>
+                <ListItemButton component={Link} to={page.link} onClick={handleCloseNavMenu}>
                     <ListItemIcon sx={{color: 'white'}}>
                       {page.icon}
                     </ListItemIcon>
@@ -104,11 +88,11 @@ function NavBar() {
               ))}
               <Divider/>
               {accessToken ? 
-              (<StyledListSubheader color='inherit'>Hej, {currentUser.username}</StyledListSubheader>) 
+              (<StyledListSubheader color='inherit'>Hej, {loggedUser.username}</StyledListSubheader>) 
               : (<StyledListSubheader>Jesteś niezalogowany/a</StyledListSubheader>)}
               {accessToken ? (
                 loggedUserOptions.map((opt => (<>
-                <ListItemButton LinkComponent={Link}>
+                <ListItemButton component={Link} to={`users/${loggedUser.username}${opt.link}`} onClick={handleCloseNavMenu}>
                     <ListItemIcon sx={{color: 'white'}}>
                       {opt.icon}
                     </ListItemIcon>
@@ -117,7 +101,7 @@ function NavBar() {
                 </>)))
               ) : (
               unloggedUserOptions.map((opt) => (<>
-              <ListItemButton LinkComponent={Link} to={opt.link}>
+              <ListItemButton component={Link} to={opt.link} onClick={handleCloseNavMenu}>
                   <ListItemIcon sx={{color: 'white'}}>
                     {opt.icon}
                   </ListItemIcon>
@@ -165,7 +149,7 @@ function NavBar() {
             </IconButton>
               <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} >
-                <Avatar alt={currentUser.username} src={`http://127.0.0.1:8000/${currentUser.avatar}`} />
+                <Avatar alt={loggedUser.username} src={`http://127.0.0.1:8000/${loggedUser.avatar}`} />
               </IconButton>
               </Tooltip>
               </>
@@ -192,7 +176,7 @@ function NavBar() {
               onClose={handleCloseUserMenu}
             >
               {loggedUserOptions.map((opt) => (
-                <MenuItem key={opt.title} onClick={handleCloseUserMenu}>
+                <MenuItem key={opt.title} onClick={handleCloseUserMenu} component={Link} to={`users/${loggedUser.username}${opt.link}`}>
                   <Typography textAlign="center">{opt.title}</Typography>
                 </MenuItem>
               ))}
