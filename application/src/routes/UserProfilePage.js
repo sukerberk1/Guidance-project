@@ -2,7 +2,7 @@ import { EmojiEvents, GroupAdd, Person, Visibility } from "@mui/icons-material";
 import { Avatar, Box, Button, Dialog, DialogTitle, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Tooltip, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { useContext, useEffect, useState } from "react";
-import { Outlet, useLoaderData } from "react-router-dom";
+import { Link, Outlet, useLoaderData } from "react-router-dom";
 import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import AuthContext from "../context/AuthContext";
@@ -51,6 +51,9 @@ export default function UserProfilePage(props){
         load();
     },[followClick, searchedUsername]);
 
+    if(loggedUser) console.log('1');
+    console.log('2');
+
     if (user !== null)
     return(<Container maxWidth="md">
         <Box sx={{display: 'flex', flexFlow:{xs:"column", md:"row"}, mt: 4, gap: 4}}>
@@ -76,11 +79,22 @@ export default function UserProfilePage(props){
                         <Visibility sx={{mx: 1}}/>
                         <Typography variant="overline">Obserwujesz</Typography>
                     </SecondaryButton>
-                ) : (
+                ) ? loggedUser : (
                     <PrimaryButton sx={{padding: 2}} onClick={handleFollow}>
                         <Visibility sx={{mx: 1}}/>
                         <Typography variant="overline">Obserwuj</Typography>
                     </PrimaryButton>
+                ) :
+                
+                (
+                    <Tooltip arrow enterTouchDelay={0} title="Zaloguj się">
+                        <span>
+                        <PrimaryButton disabled sx={{padding: 2}}>
+                            <Visibility sx={{mx: 1}}/>
+                            <Typography variant="overline">Obserwuj</Typography>
+                        </PrimaryButton>
+                        </span>
+                    </Tooltip>
                 )}
                 
             </Box>
@@ -93,7 +107,7 @@ export default function UserProfilePage(props){
             <List sx={{ pt: 0 }}>
             {user.followed_users.map((u) => (
             <ListItem disableGutters>
-                <ListItemButton key={u}>
+                <ListItemButton key={u} LinkComponent={Link} to={`/users/${u.username}`}>
                 <ListItemAvatar>
                     <Avatar alt={u.username} src={`http://127.0.0.1:8000/${u.avatar}`}/>
                 </ListItemAvatar>
@@ -108,7 +122,7 @@ export default function UserProfilePage(props){
             <List sx={{ pt: 0 }}>
             {user.users_following.map((u) => (
             <ListItem disableGutters>
-                <ListItemButton key={u}>
+                <ListItemButton key={u} LinkComponent={Link} to={`/users/${u.username}`}>
                 <ListItemAvatar>
                     <Avatar alt={u.username} src={`http://127.0.0.1:8000/${u.avatar}`}/>
                 </ListItemAvatar>

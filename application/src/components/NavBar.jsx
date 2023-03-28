@@ -41,7 +41,7 @@ function NavBar(props) {
   }
 
   return (
-    <AppBar position="sticky" sx={{backgroundColor: "transparent", boxShadow: 'none'}}>
+    <AppBar position="sticky" sx={{backgroundColor: "#262626;", boxShadow: 'none'}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <School sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, color: "#65a30d"}} />

@@ -60,7 +60,7 @@ class LikePost(generics.UpdateAPIView):
     
 
 
-
+#TODO: test
 class AddComment(generics.CreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticated,)

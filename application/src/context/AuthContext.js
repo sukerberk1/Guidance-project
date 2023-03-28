@@ -154,6 +154,7 @@ export const AuthProvider = ({ children }) => {
   }, [loading]);
 
   async function loginOnLoad(){
+    if (!localStorage.getItem("refresh")){ setLoading(false);return; }
     let loginTryCounter = 0;  // for later usage to specify how many tries are there to log in
     let isValid = await verifyAccessToken();
     while(!isValid && loginTryCounter < 20){
