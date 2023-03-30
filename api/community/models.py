@@ -32,7 +32,7 @@ class Post(models.Model):
         ("P","post"),
         ("Q","question")
     )
-    theme = models.CharField(max_length=1, choices=POST_THEMES, default='Q')
+    theme = models.CharField(max_length=1, choices=POST_THEMES, default='P')
 
     def get_tags(self):
         return self.tags.all()

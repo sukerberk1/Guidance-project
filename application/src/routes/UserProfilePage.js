@@ -51,8 +51,6 @@ export default function UserProfilePage(props){
         load();
     },[followClick, searchedUsername]);
 
-    if(loggedUser) console.log('1');
-    console.log('2');
 
     if (user !== null)
     return(<Container maxWidth="md">
@@ -79,14 +77,12 @@ export default function UserProfilePage(props){
                         <Visibility sx={{mx: 1}}/>
                         <Typography variant="overline">Obserwujesz</Typography>
                     </SecondaryButton>
-                ) ? loggedUser : (
+                ) : 'id' in loggedUser ? (
                     <PrimaryButton sx={{padding: 2}} onClick={handleFollow}>
                         <Visibility sx={{mx: 1}}/>
                         <Typography variant="overline">Obserwuj</Typography>
                     </PrimaryButton>
-                ) :
-                
-                (
+                ) : (
                     <Tooltip arrow enterTouchDelay={0} title="Zaloguj się">
                         <span>
                         <PrimaryButton disabled sx={{padding: 2}}>
@@ -107,7 +103,7 @@ export default function UserProfilePage(props){
             <List sx={{ pt: 0 }}>
             {user.followed_users.map((u) => (
             <ListItem disableGutters>
-                <ListItemButton key={u} LinkComponent={Link} to={`/users/${u.username}`}>
+                <ListItemButton key={u.username} component={Link} to={`/users/${u.username}`} onClick={handleFollowedUsersDialog}>
                 <ListItemAvatar>
                     <Avatar alt={u.username} src={`http://127.0.0.1:8000/${u.avatar}`}/>
                 </ListItemAvatar>
@@ -122,7 +118,7 @@ export default function UserProfilePage(props){
             <List sx={{ pt: 0 }}>
             {user.users_following.map((u) => (
             <ListItem disableGutters>
-                <ListItemButton key={u} LinkComponent={Link} to={`/users/${u.username}`}>
+                <ListItemButton key={u.username} component={Link} to={`/users/${u.username}`} onClick={handleFollowingDialog}>
                 <ListItemAvatar>
                     <Avatar alt={u.username} src={`http://127.0.0.1:8000/${u.avatar}`}/>
                 </ListItemAvatar>

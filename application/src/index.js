@@ -10,6 +10,7 @@ import HomePage from './routes/HomePage';
 import UserProfilePage, {Loader as profileLoader} from './routes/UserProfilePage';
 import LogoutRedirect from './routes/LogoutRedirect';
 import TagsPage from './routes/TagsPage';
+import AddPostPage from './routes/AddPostPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -22,10 +23,10 @@ const router = createBrowserRouter([
         path: "home/",
         element: <HomePage/>
       },
-      // {
-      //   path: "trending/",
-      //   element: </>
-      // },
+      {
+        path: "trending/",
+        element: <TagsPage/>
+      },
       {
         path: "tags/",
         element: <TagsPage/>
@@ -39,15 +40,19 @@ const router = createBrowserRouter([
         element: <RegisterPage/>
       },
       {
+        path: "posts/",
+        children: [
+          {
+            path: "add/",
+            element: <AddPostPage/>
+          }
+        ]
+      },
+      {
         path: "users/:username/",
         element: <UserProfilePage/>,
         loader: profileLoader,
-        children: [
-          {
-            path: "logout/",
-            element: <LogoutRedirect/>
-          }
-        ]
+        children: []
       }
     ]
   }

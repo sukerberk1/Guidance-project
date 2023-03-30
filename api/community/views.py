@@ -4,20 +4,49 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from users.serializers import UserSerializer
+from users.serializers import ShortUserSerializer
 from .models import Tag, Post
-from .serializers import PostSerializer, CommentSerializer
+from .serializers import PostSerializer, CommentSerializer, CreatePostSerializer
 
 # Create your views here.
 
 class post_viewset(viewsets.ModelViewSet):
     queryset = Post.objects.all()
+    # Viewset handles reading posts by default, so this serializer is set as default
     serializer_class = PostSerializer
-    # permission_classes = (IsAuthenticated,)
+    
+    def create(self, request, *args, **kwargs):
+        #get auth info
+        auth = JWTAuthentication()
+        user, token = auth.authenticate(self.request)
+        #resort tags
+        tag_names = request.data['tags'].replace(',',' ').split()
+        tags = []
+        for tag_name in tag_names:
+            t, created =Tag.objects.get_or_create(name=tag_name)
+            tags.append(t.id)
+        serializer = CreatePostSerializer(data={
+            'title':request.data['title'],
+            'description': request.data['description'],
+            'author': user.id,
+            'tags': tags
+        })
+        if serializer.is_valid(raise_exception=True):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    def get_permissions(self):
+        if self.action == 'retrieve' or self.action == 'list':
+            permission_classes = []
+        else:
+            permission_classes = (IsAuthenticated,)
+        return [permission() for permission in permission_classes]
     
 
 class AddPost(generics.CreateAPIView):
-    serializer_class = PostSerializer
+    serializer_class = CreatePostSerializer
     permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
@@ -36,10 +65,11 @@ class AddPost(generics.CreateAPIView):
             'author': user.id,
             'tags': tags
         })
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        if serializer.is_valid(raise_exception=True):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class LikePost(generics.UpdateAPIView):

@@ -22,6 +22,9 @@ const StyledTextField = styled(TextField)({
     },
     "& .Mui-error":{
         color: "#f59e0b",
+    },
+    "& .MuiFormHelperText-root":{
+        color: '#65a30d'
     }
 });
 // TODO: border on hover is black. Change it to lightgreen.

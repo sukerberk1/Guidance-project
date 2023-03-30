@@ -30,7 +30,7 @@ export function NavBarCustomIconButton(props){
                 LinkComponent={Link} to={props.option.link}
                 key={props.option.title}
                 sx={{ my: 2, mx:1, color: 'white', display: 'flex',
-                '& .MuiSvgIcon-root':{ transition: "ease 0.2s"},
+                '& .MuiSvgIcon-root':{ transition: "ease 0.15s"},
                 ":hover":{
                   '& .MuiSvgIcon-root[data-testid="TipsAndUpdatesIcon"]':{
                     transform: "scale(1.5) rotate(10deg) translate(0, -2px)",

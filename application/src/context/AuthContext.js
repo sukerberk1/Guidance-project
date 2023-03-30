@@ -84,7 +84,6 @@ export const AuthProvider = ({ children }) => {
     });
     const data = await response.json();
     if (response.status === 200) {
-      console.log("setting accessToken:"+data.access);
       setAccessToken(data.access); 
       return 1;
     } else{
